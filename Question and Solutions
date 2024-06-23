@@ -1,4 +1,5 @@
 -- Q1. Retrieve the total number of orders placed.
+
 SELECT 
     *
 FROM
@@ -7,7 +8,9 @@ SELECT
     COUNT(*) AS Total_orders
 FROM
     orders;
+
 -- Q2. Calculate the total revenue generated from pizza sales.
+
 SELECT 
     ROUND(SUM(orders_details.quantity * pizzas.price),
             2) AS Total_sales
@@ -53,6 +56,7 @@ ORDER BY Total_quantity_ordered DESC
 LIMIT 5;
 
 -- Q6. Join the necessary tables to find the total quantity of each pizza category ordered.
+
 SELECT 
     pt.category, SUM(od.quantity) AS Total_quantity_ordered
 FROM
