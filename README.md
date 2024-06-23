@@ -1,153 +1,23 @@
--- Q1. Retrieve the total number of orders placed.
-SELECT 
-    *
-FROM
-    orders;
-SELECT 
-    COUNT(*) AS Total_orders
-FROM
-    orders;
--- Q2. Calculate the total revenue generated from pizza sales.
-SELECT 
-    ROUND(SUM(orders_details.quantity * pizzas.price),
-            2) AS Total_sales
-FROM
-    orders_details
-        JOIN
-    pizzas ON orders_details.pizaa_id = pizzas.pizza_id;
-    
--- Q3. Identify the highest-priced pizza.
+Pizza Sales Data Analysis Project
+Project Overview
+This project involves a comprehensive analysis of pizza sales data to uncover trends, patterns, and actionable insights. Using SQL, the project addresses key business questions, such as the total number of orders placed, revenue generated, popular pizza sizes and types, and more. The analysis helps in understanding customer preferences and sales performance, providing valuable information for strategic decision-making.
 
-SELECT 
-    p.pizza_id, pt.name, pt.category, p.price
-FROM
-    pizzas AS p
-        JOIN
-    pizza_types AS pt ON p.pizza_type_id = pt.pizza_type_id
-ORDER BY p.price DESC
-LIMIT 1;
+Key Questions Addressed
+Total Orders Placed: Retrieved the total number of orders to understand overall activity.
+Total Revenue Generated: Calculated the total revenue from pizza sales.
+Highest-Priced Pizza: Identified the most expensive pizza on the menu.
+Most Common Pizza Size: Determined the most frequently ordered pizza size.
+Top 5 Most Ordered Pizza Types: Ranked the top 5 pizza types based on order quantities.
+Category-Wise Order Quantities: Analyzed the total quantity of pizzas ordered per category.
+Order Distribution by Hour: Examined when orders peak throughout the day.
+Category-Wise Pizza Distribution: Found the distribution of pizzas across different categories.
+Average Daily Orders: Calculated the average number of pizzas ordered per day.
+Top Pizza Types by Revenue: Identified the top 3 most ordered pizzas based on revenue.
+Revenue Contribution by Category: Determined the percentage contribution of each category to total revenue.
+Cumulative Revenue Over Time: Analyzed how revenue has accumulated over time.
+Top Pizza Types by Revenue in Each Category: Ranked the top 3 pizzas by revenue within each category.
+Methodology
+The project utilizes SQL for data extraction, transformation, and analysis. The analysis involves joining multiple tables, aggregating data, and performing various calculations to derive meaningful insights from the dataset.
 
--- Q4. Identify the most common pizza size ordered.
-
-SELECT 
-    p.size, SUM(od.quantity) AS Total_orders
-FROM
-    pizzas AS p
-        JOIN
-    orders_details AS od ON p.pizza_id = od.pizaa_id
-GROUP BY p.size
-ORDER BY Total_orders DESC;
-
--- Q5. List the top 5 most ordered pizza types along with their quantities.
-
-SELECT 
-    pt.name, SUM(od.quantity) AS Total_quantity_ordered
-FROM
-    pizza_types AS pt
-        JOIN
-    pizzas AS p ON pt.pizza_type_id = p.pizza_type_id
-        JOIN
-    orders_details AS od ON p.pizza_id = od.pizaa_id
-GROUP BY pt.name
-ORDER BY Total_quantity_ordered DESC
-LIMIT 5;
-
--- Q6. Join the necessary tables to find the total quantity of each pizza category ordered.
-SELECT 
-    pt.category, SUM(od.quantity) AS Total_quantity_ordered
-FROM
-    pizza_types AS pt
-        JOIN
-    pizzas AS p ON pt.pizza_type_id = p.pizza_type_id
-        JOIN
-    orders_details AS od ON p.pizza_id = od.pizaa_id
-GROUP BY pt.category
-ORDER BY Total_quantity_ordered DESC;
-
--- Q7. Determine the distribution of orders by hour of the day.
-
-SELECT 
-    HOUR(order_time) AS hour,
-    COUNT(order_id) AS number_of_orders
-FROM
-    orders
-GROUP BY hour;
-
--- Q8. find the category-wise distribution of pizzas.
-
-SELECT 
-    category, COUNT(name) AS pizza_count
-FROM
-    pizza_types
-GROUP BY category;
-
--- Q9. Group the orders by date and calculate the average number of pizzas ordered per day.
-
-SELECT 
-    ROUND(AVG(quantity_ordered), 2) AS avg_order_count
-FROM
-    (SELECT 
-        o.order_date AS Day, SUM(od.quantity) AS quantity_ordered
-    FROM
-        orders AS o
-    JOIN orders_details AS od ON o.order_id = od.order_id
-    GROUP BY o.order_date) AS data_for_avg;
-
--- Q10. Determine the top 3 most ordered pizza types based on revenue
-
-SELECT 
-    pt.name, ROUND(SUM(p.price * od.quantity), 2) AS price
-FROM
-    orders_details AS od
-        JOIN
-    pizzas AS p ON od.pizaa_id = p.pizza_id
-        JOIN
-    pizza_types AS pt ON pt.pizza_type_id = p.pizza_type_id
-GROUP BY pt.name
-ORDER BY price DESC
-LIMIT 3;
-
--- Q11. Calculate the percentage contribution of each pizza category to total revenue.
-
-SELECT 
-    pt.category,
-    ROUND((SUM(p.price * od.quantity) / (SELECT 
-                    SUM(pizzas.price * orders_details.quantity)
-                FROM
-                    orders_details
-                        JOIN
-                    pizzas ON orders_details.pizaa_id = pizzas.pizza_id)) * 100,
-            2) AS Revenue_percentage
-FROM
-    orders_details AS od
-        JOIN
-    pizzas AS p ON od.pizaa_id = p.pizza_id
-        JOIN
-    pizza_types AS pt ON p.pizza_type_id = pt.pizza_type_id
-GROUP BY pt.category
-ORDER BY Revenue_percentage DESC;
-
-
--- Q12. Analyze the cumulative revenue generated over time.
-
-select order_date , round(sum(revenue) over(order by order_date),2) as cumulative_revenue
-from
-(select o.order_date , sum(od.quantity * p.price) as revenue
-from orders_details as od join pizzas as p
-on od.pizaa_id = p.pizza_id
-join orders as o 
-on od.order_id = o.order_id
-group by o.order_date) as Total_revenue;
-
--- Q13. Determine the top 3 most ordered pizza types based on revenue for each pizza category.
-
-select * from 
-(select pt.category , pt.name , round(sum(od.quantity * p.price),2) as revenue,
-rank() over(partition by pt.category order by sum(od.quantity * p.price) desc ) as Rank_
-from orders_details as od join pizzas as p
-on od.pizaa_id = p.pizza_id
-join pizza_types as pt 
-on p.pizza_type_id = pt.pizza_type_id
-group by pt.category , pt.name) as a 
-where Rank_ <= 3;
-
+Conclusion
+This project demonstrates the application of data analysis techniques to real-world business problems, providing a solid foundation for making data-driven decisions in the context of pizza sales. The insights derived from this analysis can help businesses optimize their menu offerings, pricing strategies, and marketing efforts.
